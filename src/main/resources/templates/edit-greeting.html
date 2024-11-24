@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Greeting</title>
+</head>
+<body>
+    <h1>Edit Greeting</h1>
+    
+    <form th:action="@{/greetings/{id}(id=${greeting.id})}" method="post">
+    <input type="hidden" name="_method" value="put" /> <!-- Simulating PUT method -->
+    
+    <label for="content">Content:</label>
+    <input type="text" id="content" name="content" th:value="${greeting.content}" required />
+    
+    <label for="header">Header:</label>
+    <input type="text" id="header" name="header" th:value="${greeting.header}" />
+    
+    <button type="submit">Save</button>
+</form>
+    
+    <p>
+        <a th:href="@{/greetings}">Back to Greetings List</a>
+    </p>
+</body>
+</html>

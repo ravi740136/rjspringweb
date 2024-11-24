@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Greeting</title>
+</head>
+<body>
+
+<h1>Create a New Greeting</h1>
+
+
+
+<form th:action="@{/greetings}" th:object="${greeting}" method="post">
+    <!-- Input for Content -->
+    <label for="content">Content:</label>
+    <input type="text" id="content" th:field="*{content}" required />
+
+    <!-- Input for Header (if applicable) -->
+    <label for="header">Header:</label>
+    <input type="text" id="header" th:field="*{header}" />
+
+    <button type="submit">Create Greeting</button>
+</form>
+
+
+</body>
+</html>

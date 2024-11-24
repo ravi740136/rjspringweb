@@ -13,7 +13,7 @@ public class GreetingControllerTest {
     @BeforeClass
     public void setup() {
         // Configure RestAssured base URI and port for your application
-        RestAssured.baseURI = "http://localhost";
+        RestAssured.baseURI = "http://localhost/rjspringweb";
         RestAssured.port = 8080; // Use the correct port for your application
         basePath = "/api/greetings"; // Set the base path to your API endpoint
     }
@@ -53,9 +53,9 @@ public class GreetingControllerTest {
     }
 
     
-    @Test(dependsOnMethods = "testCreateGreeting")
+    @Test
     public void testGetAllGreetings() {
-        given()
+        given().log().all()
         .when()
             .get()
         .then()
@@ -116,6 +116,67 @@ public class GreetingControllerTest {
             .get("/" + greetingId)
         .then()
             .statusCode(404); // Expecting HTTP 404 Not Found
+    }
+    
+    @Test
+    public void testGetGreetingsByContent() {
+        // Given
+        String content = "Hello";
+
+        // When & Then
+        given().log().all()
+            .queryParam("content", content)
+        .when()
+            .get("/by-content")
+        .then() 
+            .statusCode(200)
+            .body("[0].content", equalTo("Hello"));
+    }
+
+    @Test
+    public void testGetGreetingsByKeyword() {
+        // Given
+        String keyword = "Hello";
+
+        // When & Then
+        given()
+            .queryParam("keyword", keyword)
+        .when()
+            .get("/by-keyword")
+        .then()
+            .statusCode(200)
+            .body("size()", greaterThan(0))
+            .body("[0].content", containsString("Hello"));
+    }
+
+    @Test
+    public void testGetGreetingsByContent_NoResults() {
+        // Given
+        String content = "NonExistentContent";
+
+        // When & Then
+        given()
+            .queryParam("content", content)
+        .when()
+            .get("/by-content")
+        .then()
+            .statusCode(200)
+            .body("size()", equalTo(0)); // Expecting no results
+    }
+
+    @Test
+    public void testGetGreetingsByKeyword_NoResults() {
+        // Given
+        String keyword = "NonExistentKeyword";
+
+        // When & Then
+        given()
+            .queryParam("keyword", keyword)
+        .when()
+            .get("/by-keyword")
+        .then()
+            .statusCode(200)
+            .body("size()", equalTo(0)); // Expecting no results
     }
 
 }

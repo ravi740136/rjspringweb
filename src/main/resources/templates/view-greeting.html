@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Greeting</title>
+</head>
+<body>
+
+<h1>Greeting Details</h1>
+
+<div>
+    <p><strong>ID:</strong> <span th:text="${greeting.id}"></span></p>
+    <p><strong>Content:</strong> <span th:text="${greeting.content}"></span></p>
+  <p><strong>Header:</strong> <span th:text="${greeting.header}"></span></p>
+</div>
+
+<div>
+<a th:href="@{/greetings}">Back to All Greetings</a>
+
+   
+</div>
+
+</body>
+</html>

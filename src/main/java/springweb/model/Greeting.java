@@ -4,8 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "GREETING")
 public class Greeting {
 
     @Id
@@ -13,6 +15,15 @@ public class Greeting {
     private long id;
 
     private String content;
+    public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}
+
+	private String header;
 
     // Constructors, Getters, and Setters
     public Greeting() {}
@@ -36,4 +47,11 @@ public class Greeting {
     public void setContent(String content) {
         this.content = content;
     }
+
+	@Override
+	public String toString() {
+		return "Greeting [id=" + id + ", content=" + content + ", header=" + header + "]";
+	}
+    
+ 
 }

@@ -1,8 +1,11 @@
 package springweb.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import springweb.model.Greeting;
 import springweb.repository.GreetingRepository;
 
@@ -12,16 +15,27 @@ import java.util.Optional;
 @Service
 public class GreetingService {
 
+	Logger logger = LoggerFactory.getLogger(GreetingService.class);
     private final GreetingRepository greetingRepository;
 
     @Autowired
     public GreetingService(GreetingRepository greetingRepository) {
         this.greetingRepository = greetingRepository;
     }
+    
+    // Fetch greetings by exact content
+    public List<Greeting> getGreetingsByContent(String content) {
+        return greetingRepository.findByContent(content);
+    }
+
+    // Fetch greetings containing a keyword
+    public List<Greeting> getGreetingsByKeyword(String keyword) {
+        return greetingRepository.findByContentContaining(keyword);
+    }
 
     // Create a new Greeting
-    public Greeting createGreeting(String content) {
-        Greeting greeting = new Greeting(content);
+    public Greeting createGreeting(Greeting greeting) {
+     //   Greeting greeting = new Greeting(content);
         return greetingRepository.save(greeting);
     }
 
@@ -37,15 +51,17 @@ public class GreetingService {
     }
 
     // Update a Greeting
-    public Greeting updateGreeting(long id, String content) {
-        Optional<Greeting> existingGreeting = greetingRepository.findById(id);
-        if (existingGreeting.isPresent()) {
-            Greeting greeting = existingGreeting.get();
-            greeting.setContent(content);
-            return greetingRepository.save(greeting);
-        }
-        return null; // Return null if not found
+    public Greeting updateGreeting(long id, Greeting greeting) {
+        return greetingRepository.findById(id)
+                .map(existingGreeting -> {
+                    existingGreeting.setContent(greeting.getContent());
+                    existingGreeting.setHeader(greeting.getHeader());
+                    logger.info("Updated greeting: " + existingGreeting);
+                    return greetingRepository.save(existingGreeting);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Greeting with id " + id + " not found"));
     }
+
 
     // Delete a Greeting by ID
     public boolean deleteGreeting(long id) {

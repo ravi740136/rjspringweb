@@ -1,7 +1,10 @@
-package springweb.controller;
+ package springweb.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.persistence.EntityNotFoundException;
 import springweb.model.Greeting;
 import springweb.service.GreetingService;
 
@@ -22,7 +27,8 @@ import springweb.service.GreetingService;
 public class GreetingController {
 
     private final GreetingService greetingService;
-
+    private static final Logger logger = LoggerFactory.getLogger(GreetingController.class);
+   
     @Autowired
     public GreetingController(GreetingService greetingService) {
         this.greetingService = greetingService;
@@ -30,9 +36,22 @@ public class GreetingController {
 
     // Create a new Greeting
     @PostMapping
-    public ResponseEntity<Greeting> createGreeting(@RequestBody String content) {
-        Greeting createdGreeting = greetingService.createGreeting(content);
+    public ResponseEntity<Greeting> createGreeting(@RequestBody Greeting greeting) {
+        Greeting createdGreeting = greetingService.createGreeting(greeting);
+        logger.info("created greeting "+createdGreeting);
         return new ResponseEntity<>(createdGreeting, HttpStatus.CREATED);
+    }
+    
+ // Endpoint to fetch greetings by exact content
+    @GetMapping("/by-content")
+    public List<Greeting> getGreetingsByContent(@RequestParam String content) {
+        return greetingService.getGreetingsByContent(content);
+    }
+
+    // Endpoint to fetch greetings containing a keyword
+    @GetMapping("/by-keyword")
+    public List<Greeting> getGreetingsByKeyword(@RequestParam String keyword) {
+        return greetingService.getGreetingsByKeyword(keyword);
     }
 
     // Get all Greetings
@@ -52,17 +71,18 @@ public class GreetingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    // Update an existing Greeting
+    
     @PutMapping("/{id}")
-    public ResponseEntity<Greeting> updateGreeting(@PathVariable long id, @RequestBody String content) {
-        Greeting updatedGreeting = greetingService.updateGreeting(id, content);
-        if (updatedGreeting != null) {
+    public ResponseEntity<Greeting> updateGreeting(@PathVariable long id, @RequestBody Greeting greeting) {
+        try {
+            Greeting updatedGreeting = greetingService.updateGreeting(id, greeting);
             return new ResponseEntity<>(updatedGreeting, HttpStatus.OK);
-        } else {
+        } catch (EntityNotFoundException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+
 
     // Delete a Greeting
     @DeleteMapping("/{id}")
