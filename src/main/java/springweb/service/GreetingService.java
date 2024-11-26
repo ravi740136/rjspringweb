@@ -52,14 +52,27 @@ public class GreetingService {
 
     // Update a Greeting
     public Greeting updateGreeting(long id, Greeting greeting) {
-        return greetingRepository.findById(id)
+    	//two ways of doing the same thing
+       /* return greetingRepository.findById(id)
                 .map(existingGreeting -> {
                     existingGreeting.setContent(greeting.getContent());
                     existingGreeting.setHeader(greeting.getHeader());
                     logger.info("Updated greeting: " + existingGreeting);
                     return greetingRepository.save(existingGreeting);
                 })
-                .orElseThrow(() -> new EntityNotFoundException("Greeting with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Greeting with id " + id + " not found"));*/
+    	 Optional<Greeting> optionalGreeting = greetingRepository.findById(id);
+    	    if (optionalGreeting.isPresent()) {
+    	        Greeting existingGreeting = optionalGreeting.get();
+    	        existingGreeting.setContent(greeting.getContent());
+    	        existingGreeting.setHeader(greeting.getHeader());
+    	        logger.info("Updated greeting: " + existingGreeting);
+    	        return greetingRepository.save(existingGreeting);
+    	    } else {
+    	        throw new EntityNotFoundException("Greeting with id " + id + " not found");
+    	    }
+        
+    
     }
 
 
