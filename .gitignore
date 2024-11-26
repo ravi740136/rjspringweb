@@ -6,6 +6,7 @@
 
 # Maven
 target/
+logs/
 *.iml
 
 # OS-specific files
