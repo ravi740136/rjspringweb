@@ -2,6 +2,8 @@ package springweb.controller.test;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import springweb.model.Greeting;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -24,7 +26,7 @@ public class GreetingControllerTest {
         Response response =
             given()
                 .contentType(ContentType.JSON)
-                .body(greetingContent)
+                .body(new Greeting(greetingContent) )
             .when()
                 .post()
             .then()
@@ -86,7 +88,7 @@ public class GreetingControllerTest {
     private int createGreetingIfNotExists(String greetingContent) {
         Response response = given()
             .contentType(ContentType.JSON)
-            .body(greetingContent)
+            .body(new Greeting(greetingContent))
         .when()
             .post()
         .then()
@@ -121,7 +123,7 @@ public class GreetingControllerTest {
     @Test
     public void testGetGreetingsByContent() {
         // Given
-        String content = "Hello";
+        String content = "Hello, World!";
 
         // When & Then
         given().log().all()
@@ -130,7 +132,7 @@ public class GreetingControllerTest {
             .get("/by-content")
         .then() 
             .statusCode(200)
-            .body("[0].content", equalTo("Hello"));
+            .body("[0].content", equalTo(content));
     }
 
     @Test
