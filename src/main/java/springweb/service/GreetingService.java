@@ -70,11 +70,8 @@ public class GreetingService {
     	        return greetingRepository.save(existingGreeting);
     	    } else {
     	        throw new EntityNotFoundException("Greeting with id " + id + " not found");
-    	    }
-        
-    
+    	    }   
     }
-
 
     // Delete a Greeting by ID
     public boolean deleteGreeting(long id) {
